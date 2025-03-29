@@ -98,10 +98,22 @@ export class MemStorage implements IStorage {
     const id = this.currentMaidId++;
     const joinedAt = new Date().toISOString();
     
-    // Create the maid object with all fields
-    const maid: Maid = { 
-      ...insertMaid, 
-      id, 
+    // Set default values for optional fields
+    const address = insertMaid.address ?? null;
+    const experience = insertMaid.experience ?? null;
+    const services = insertMaid.services ?? [];
+    
+    // Create the maid object with all fields properly typed
+    const maid: Maid = {
+      id,
+      name: insertMaid.name,
+      email: insertMaid.email,
+      phone: insertMaid.phone,
+      city: insertMaid.city,
+      locality: insertMaid.locality,
+      address,
+      experience,
+      services,
       joinedAt
     };
     

@@ -24,6 +24,7 @@ export default function Header() {
             <a href="#how-it-works" className="text-base font-medium text-gray-700 hover:text-primary transition-colors">How it Works</a>
             <a href="#pricing" className="text-base font-medium text-gray-700 hover:text-primary transition-colors">Pricing</a>
             <a href="#faq" className="text-base font-medium text-gray-700 hover:text-primary transition-colors">FAQ</a>
+            <Link href="/find-maid" className="text-base font-medium text-gray-700 hover:text-primary transition-colors">Find a Maid</Link>
           </nav>
           
           {/* Mobile Menu Button */}
@@ -86,6 +87,13 @@ export default function Header() {
             >
               FAQ
             </a>
+            <Link 
+              href="/find-maid" 
+              className="text-base font-medium text-gray-700 hover:text-primary transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Find a Maid
+            </Link>
             <Button asChild className="w-full justify-center mb-2" variant="outline">
               <a 
                 href="#become-a-maid"
