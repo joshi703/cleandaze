@@ -55,9 +55,9 @@ export default function Header() {
             {user ? (
               <>
                 <Button asChild variant="ghost" className="gap-2">
-                  <Link href="/profile">
+                  <Link href={user.role === "admin" ? "/dashboard" : "/profile"}>
                     <User className="h-4 w-4" />
-                    {user.name}
+                    {user.name || user.username}
                   </Link>
                 </Button>
                 <Button onClick={handleLogout} variant="outline" className="gap-2">
@@ -133,11 +133,11 @@ export default function Header() {
               <>
                 <Button asChild className="w-full justify-center gap-2 mb-2" variant="ghost">
                   <Link 
-                    href="/profile"
+                    href={user.role === "admin" ? "/dashboard" : "/profile"}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <User className="h-4 w-4" />
-                    My Profile
+                    {user.role === "admin" ? "Dashboard" : "My Profile"}
                   </Link>
                 </Button>
                 <Button 

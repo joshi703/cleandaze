@@ -38,7 +38,7 @@ export default function AuthPage() {
   
   // Redirect if already logged in
   if (user) {
-    setLocation("/");
+    setLocation(user.role === "admin" ? "/dashboard" : "/");
     return null;
   }
 
@@ -63,12 +63,12 @@ export default function AuthPage() {
 
   const onLoginSubmit = async (values: LoginValues) => {
     try {
-      await loginMutation.mutateAsync(values);
+      const userData = await loginMutation.mutateAsync(values);
       toast({
         title: "Login successful",
         description: "You have successfully logged in",
       });
-      setLocation("/");
+      setLocation(userData.role === "admin" ? "/dashboard" : "/");
     } catch (error) {
       console.error("Login error:", error);
       toast({
