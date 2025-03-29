@@ -30,11 +30,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Booking, Maid, CompanySettings } from "@shared/schema";
-import { Loader2, UserCheck, UserPlus, Calendar, Settings, Check, X, AlertCircle } from "lucide-react";
+import { Loader2, UserCheck, UserPlus, Calendar, Settings, Check, X, AlertCircle, LogOut } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, logoutMutation } = useAuth();
+  
+  const handleLogout = async () => {
+    await logoutMutation.mutateAsync();
+  };
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedMaid, setSelectedMaid] = useState<Maid | null>(null);
@@ -288,7 +292,16 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
           <p className="text-gray-600">Manage your MaidEasy platform</p>
         </div>
-        <div className="mt-4 md:mt-0">
+        <div className="mt-4 md:mt-0 flex items-center space-x-2">
+          <Button 
+            variant="outline" 
+            className="flex items-center gap-2"
+            onClick={handleLogout}
+            disabled={logoutMutation.isPending}
+          >
+            <LogOut className="h-4 w-4" />
+            {logoutMutation.isPending ? "Logging out..." : "Logout"}
+          </Button>
           <Button variant="outline" className="mr-2">
             Export Data
           </Button>
