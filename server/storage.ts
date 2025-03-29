@@ -118,8 +118,8 @@ export class MemStorage implements IStorage {
     const settings = await this.getCompanySettings();
     if (!settings) {
       await this.createOrUpdateCompanySettings({
-        companyName: "MaidEasy",
-        contactEmail: "contact@maideasy.com",
+        companyName: "homegleem",
+        contactEmail: "contact@homegleem.com",
         contactPhone: "+91 9876543210",
         address: "123 Main Street, Mumbai, India",
         logo: "/logo.png",

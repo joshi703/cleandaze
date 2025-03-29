@@ -19,8 +19,7 @@ export default function Header() {
           <div className="flex items-center">
             {/* Logo */}
             <Link href="/" className="flex items-center">
-              <div className="w-10 h-10 rounded-lg bg-cream-dark flex items-center justify-center text-black font-bold text-xl border border-black">M</div>
-              <span className="ml-2 text-xl font-bold text-black">MaidEasy</span>
+              <img src="/homegleem-logo.png" alt="homegleem logo" className="h-16" />
             </Link>
           </div>
           
