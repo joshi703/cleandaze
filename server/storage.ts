@@ -1,38 +1,131 @@
-import { users, type User, type InsertUser, waitlistEntries, type WaitlistEntry, type InsertWaitlistEntry, maids, type Maid, type InsertMaid } from "@shared/schema";
+import { 
+  users, type User, type InsertUser, 
+  waitlistEntries, type WaitlistEntry, type InsertWaitlistEntry, 
+  maids, type Maid, type InsertMaid, 
+  bookings, type Booking, type InsertBooking,
+  companySettings, type CompanySettings, type InsertCompanySettings
+} from "@shared/schema";
+import session from "express-session";
+import createMemoryStore from "memorystore";
+
+const MemoryStore = createMemoryStore(session);
 
 export interface IStorage {
+  // User methods
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  
+  // Waitlist methods
   getWaitlistEntries(): Promise<WaitlistEntry[]>;
   getWaitlistEntryByEmail(email: string): Promise<WaitlistEntry | undefined>;
   createWaitlistEntry(entry: InsertWaitlistEntry): Promise<WaitlistEntry>;
+  
+  // Maid methods
   getMaids(): Promise<Maid[]>;
   getMaidsByCity(city: string): Promise<Maid[]>;
   getMaidsByLocality(locality: string): Promise<Maid[]>;
   getMaidById(id: number): Promise<Maid | undefined>;
   getMaidByEmail(email: string): Promise<Maid | undefined>;
   createMaid(maid: InsertMaid): Promise<Maid>;
+  updateMaidAvailability(id: number, isAvailable: boolean): Promise<Maid | undefined>;
+  
+  // Booking methods
+  getBookings(): Promise<Booking[]>;
+  getBookingById(id: number): Promise<Booking | undefined>;
+  getBookingsByUserId(userId: number): Promise<Booking[]>;
+  getBookingsByMaidId(maidId: number): Promise<Booking[]>;
+  createBooking(booking: InsertBooking): Promise<Booking>;
+  updateBookingStatus(id: number, status: string): Promise<Booking | undefined>;
+  
+  // Company settings methods
+  getCompanySettings(): Promise<CompanySettings | undefined>;
+  createOrUpdateCompanySettings(settings: InsertCompanySettings): Promise<CompanySettings>;
+  
+  // Session store
+  sessionStore: session.Store;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private waitlist: Map<number, WaitlistEntry>;
   private maids: Map<number, Maid>;
+  private bookings: Map<number, Booking>;
+  private companySettings: CompanySettings | undefined;
+  
   currentUserId: number;
   currentWaitlistId: number;
   currentMaidId: number;
+  currentBookingId: number;
+  sessionStore: session.Store; // Express session store
 
   constructor() {
     this.users = new Map();
     this.waitlist = new Map();
     this.maids = new Map();
+    this.bookings = new Map();
     this.currentUserId = 1;
     this.currentWaitlistId = 1;
     this.currentMaidId = 1;
+    this.currentBookingId = 1;
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000 // prune expired entries every 24h
+    });
     
-    // Initialize with sample maids data
+    // Initialize with sample data
     this.initializeSampleMaids();
+    // Initialize admin user and company settings
+    this.initialize();
+  }
+  
+  // We need to use async initialization separately
+  private async initialize() {
+    await this.initializeAdminUser();
+    await this.initializeCompanySettings();
+  }
+  
+  private async initializeAdminUser() {
+    // Check if admin user already exists
+    const existingAdmin = await this.getUserByUsername("admin");
+    if (!existingAdmin) {
+      // Import the hashPassword function from auth.ts
+      const { scrypt, randomBytes } = await import("crypto");
+      const { promisify } = await import("util");
+      
+      const scryptAsync = promisify(scrypt);
+      
+      // Simple password hashing function for initialization
+      const hashPassword = async (password: string) => {
+        const salt = randomBytes(16).toString("hex");
+        const buf = (await scryptAsync(password, salt, 64)) as Buffer;
+        return `${buf.toString("hex")}.${salt}`;
+      };
+      
+      // Create admin user with hashed password
+      await this.createUser({
+        username: "admin",
+        password: await hashPassword("admin123"),
+        email: "admin@maideasy.com",
+        name: "Admin User",
+        role: "admin"
+      } as InsertUser);
+    }
+  }
+
+  private async initializeCompanySettings() {
+    const settings = await this.getCompanySettings();
+    if (!settings) {
+      await this.createOrUpdateCompanySettings({
+        companyName: "MaidEasy",
+        contactEmail: "contact@maideasy.com",
+        contactPhone: "+91 9876543210",
+        address: "123 Main Street, Mumbai, India",
+        logo: "/logo.png",
+        servicesOffered: ["Cleaning", "Cooking", "Child Care", "Elderly Care", "Laundry", "Pet Care"],
+        operatingHours: "Monday to Saturday, 8:00 AM to 8:00 PM"
+      } as InsertCompanySettings);
+    }
   }
   
   private initializeSampleMaids() {
@@ -152,7 +245,7 @@ export class MemStorage implements IStorage {
     // Add each sample maid to the storage
     sampleMaids.forEach((maid) => {
       const id = this.currentMaidId++;
-      this.maids.set(id, { ...maid, id });
+      this.maids.set(id, { ...maid, id, isAvailable: true });
     });
   }
 
@@ -166,9 +259,17 @@ export class MemStorage implements IStorage {
     );
   }
 
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.email === email,
+    );
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
-    const user: User = { ...insertUser, id };
+    const createdAt = new Date().toISOString();
+    const role = insertUser.role ?? "customer";
+    const user: User = { ...insertUser, id, createdAt, role };
     this.users.set(id, user);
     return user;
   }
@@ -238,11 +339,107 @@ export class MemStorage implements IStorage {
       address,
       experience,
       services,
-      joinedAt
+      joinedAt,
+      isAvailable: true
     };
     
     this.maids.set(id, maid);
     return maid;
+  }
+  
+  async updateMaidAvailability(id: number, isAvailable: boolean): Promise<Maid | undefined> {
+    const maid = await this.getMaidById(id);
+    if (maid) {
+      const updatedMaid = { ...maid, isAvailable };
+      this.maids.set(id, updatedMaid);
+      return updatedMaid;
+    }
+    return undefined;
+  }
+  
+  // Booking methods
+  async getBookings(): Promise<Booking[]> {
+    return Array.from(this.bookings.values());
+  }
+
+  async getBookingById(id: number): Promise<Booking | undefined> {
+    return this.bookings.get(id);
+  }
+
+  async getBookingsByUserId(userId: number): Promise<Booking[]> {
+    return Array.from(this.bookings.values()).filter(
+      (booking) => booking.userId === userId
+    );
+  }
+
+  async getBookingsByMaidId(maidId: number): Promise<Booking[]> {
+    return Array.from(this.bookings.values()).filter(
+      (booking) => booking.maidId === maidId
+    );
+  }
+
+  async createBooking(insertBooking: InsertBooking): Promise<Booking> {
+    const id = this.currentBookingId++;
+    const createdAt = new Date().toISOString();
+    const status = "pending";
+    const notes = insertBooking.notes ?? null;
+    
+    const booking: Booking = {
+      ...insertBooking,
+      notes,
+      id,
+      status,
+      createdAt
+    };
+    
+    this.bookings.set(id, booking);
+    return booking;
+  }
+
+  async updateBookingStatus(id: number, status: string): Promise<Booking | undefined> {
+    const booking = await this.getBookingById(id);
+    if (booking) {
+      const updatedBooking = { ...booking, status };
+      this.bookings.set(id, updatedBooking);
+      return updatedBooking;
+    }
+    return undefined;
+  }
+  
+  // Company settings methods
+  async getCompanySettings(): Promise<CompanySettings | undefined> {
+    return this.companySettings;
+  }
+
+  async createOrUpdateCompanySettings(insertSettings: InsertCompanySettings): Promise<CompanySettings> {
+    const updatedAt = new Date().toISOString();
+    
+    // Handle optional fields with null defaults
+    const logo = insertSettings.logo ?? null;
+    const servicesOffered = insertSettings.servicesOffered ?? null;
+    const operatingHours = insertSettings.operatingHours ?? null;
+    
+    if (this.companySettings) {
+      this.companySettings = {
+        ...this.companySettings,
+        ...insertSettings,
+        logo,
+        servicesOffered,
+        operatingHours,
+        updatedAt
+      };
+    } else {
+      this.companySettings = {
+        ...insertSettings,
+        logo,
+        servicesOffered,
+        operatingHours,
+        id: 1,
+        updatedAt
+      };
+    }
+    
+    return this.companySettings!;
   }
 }
 

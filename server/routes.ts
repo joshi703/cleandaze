@@ -1,10 +1,13 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertWaitlistSchema, insertMaidSchema } from "@shared/schema";
+import { insertWaitlistSchema, insertMaidSchema, insertBookingSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
+import { setupAuth } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Set up authentication
+  setupAuth(app);
   // Waitlist API routes
   app.post("/api/waitlist", async (req: Request, res: Response) => {
     try {
@@ -166,6 +169,178 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(500).json({
         message: "Internal server error"
       });
+    }
+  });
+
+  // Booking API routes
+  app.post("/api/bookings", async (req: Request, res: Response) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      // Validate the request body
+      const result = insertBookingSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        const validationError = fromZodError(result.error);
+        return res.status(400).json({
+          message: "Validation error",
+          errors: validationError.details
+        });
+      }
+      
+      // Check if maid exists
+      const maid = await storage.getMaidById(result.data.maidId);
+      if (!maid) {
+        return res.status(404).json({ message: "Maid not found" });
+      }
+      
+      // Create the booking
+      const booking = await storage.createBooking(result.data);
+      
+      return res.status(201).json({ 
+        message: "Booking created successfully",
+        data: booking
+      });
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get("/api/bookings", async (req: Request, res: Response) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      // Admin can see all bookings, users can only see their own
+      const user = req.user as any;
+      let bookings;
+      
+      if (user.role === "admin") {
+        bookings = await storage.getBookings();
+      } else {
+        bookings = await storage.getBookingsByUserId(user.id);
+      }
+      
+      return res.status(200).json({ bookings });
+    } catch (error) {
+      console.error("Error getting bookings:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get("/api/bookings/:id", async (req: Request, res: Response) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const id = parseInt(req.params.id, 10);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+      }
+      
+      const booking = await storage.getBookingById(id);
+      if (!booking) {
+        return res.status(404).json({ message: "Booking not found" });
+      }
+      
+      // Check if user is admin or the booking belongs to the user
+      const user = req.user as any;
+      if (user.role !== "admin" && booking.userId !== user.id) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      return res.status(200).json({ booking });
+    } catch (error) {
+      console.error("Error getting booking by ID:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.patch("/api/bookings/:id/status", async (req: Request, res: Response) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const id = parseInt(req.params.id, 10);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+      }
+      
+      const { status } = req.body;
+      if (!status || typeof status !== "string") {
+        return res.status(400).json({ message: "Status is required" });
+      }
+      
+      // Validate status
+      if (!["pending", "confirmed", "completed", "cancelled"].includes(status)) {
+        return res.status(400).json({ message: "Invalid status" });
+      }
+      
+      const booking = await storage.getBookingById(id);
+      if (!booking) {
+        return res.status(404).json({ message: "Booking not found" });
+      }
+      
+      // Check if user is admin or the booking belongs to the user
+      const user = req.user as any;
+      if (user.role !== "admin" && booking.userId !== user.id) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const updatedBooking = await storage.updateBookingStatus(id, status);
+      
+      return res.status(200).json({ 
+        message: "Booking status updated successfully",
+        data: updatedBooking
+      });
+    } catch (error) {
+      console.error("Error updating booking status:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Company settings API (admin only)
+  app.get("/api/company-settings", async (req: Request, res: Response) => {
+    try {
+      const settings = await storage.getCompanySettings();
+      if (!settings) {
+        return res.status(404).json({ message: "Company settings not found" });
+      }
+      
+      return res.status(200).json({ settings });
+    } catch (error) {
+      console.error("Error getting company settings:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post("/api/company-settings", async (req: Request, res: Response) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      // Check if user is admin
+      const user = req.user as any;
+      if (user.role !== "admin") {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const settings = await storage.createOrUpdateCompanySettings(req.body);
+      
+      return res.status(200).json({ 
+        message: "Company settings updated successfully",
+        data: settings
+      });
+    } catch (error) {
+      console.error("Error updating company settings:", error);
+      return res.status(500).json({ message: "Internal server error" });
     }
   });
 
