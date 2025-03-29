@@ -221,8 +221,20 @@ export default function Dashboard() {
   
   // Handle actions
   const handleApproveMaid = (maid: Maid) => {
+    // Set the selected maid
     setSelectedMaid(maid);
-    setIsApprovalDialogOpen(true);
+    
+    // If quick approval/suspension is needed (without confirmation dialog)
+    if (maid.isAvailable === true || maid.isAvailable === false) {
+      // Directly update the status
+      updateMaidMutation.mutate({ 
+        id: maid.id, 
+        isAvailable: !maid.isAvailable 
+      });
+    } else {
+      // Show the approval dialog for confirmation
+      setIsApprovalDialogOpen(true);
+    }
   };
   
   const handleUpdateMaidStatus = () => {
@@ -381,15 +393,27 @@ export default function Dashboard() {
               <div className="mt-4">
                 <h3 className="font-medium mb-2">Quick Actions</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Button variant="outline" className="justify-start">
+                  <Button 
+                    variant="outline" 
+                    className="justify-start"
+                    onClick={() => setActiveTab("maids")}
+                  >
                     <UserCheck className="mr-2 h-4 w-4" />
                     Approve New Maids
                   </Button>
-                  <Button variant="outline" className="justify-start">
+                  <Button 
+                    variant="outline" 
+                    className="justify-start"
+                    onClick={() => setActiveTab("bookings")}
+                  >
                     <Calendar className="mr-2 h-4 w-4" />
                     Manage Bookings
                   </Button>
-                  <Button variant="outline" className="justify-start">
+                  <Button 
+                    variant="outline" 
+                    className="justify-start"
+                    onClick={() => setActiveTab("settings")}
+                  >
                     <Settings className="mr-2 h-4 w-4" />
                     Platform Settings
                   </Button>
@@ -594,7 +618,13 @@ export default function Dashboard() {
                           size="sm" 
                           variant={maid.isAvailable ? "outline" : "default"}
                           className="mr-2"
-                          onClick={() => handleApproveMaid(maid)}
+                          onClick={() => {
+                            // Direct update without dialog
+                            updateMaidMutation.mutate({ 
+                              id: maid.id, 
+                              isAvailable: !maid.isAvailable 
+                            });
+                          }}
                         >
                           {maid.isAvailable ? 'Suspend' : 'Approve'}
                         </Button>
@@ -958,9 +988,18 @@ export default function Dashboard() {
                 <div className="flex space-x-3">
                   <Button 
                     variant={selectedMaid.isAvailable ? "destructive" : "default"}
-                    onClick={handleUpdateMaidStatus}
+                    onClick={() => {
+                      // Direct update without using handleUpdateMaidStatus
+                      updateMaidMutation.mutate({ 
+                        id: selectedMaid.id, 
+                        isAvailable: !selectedMaid.isAvailable 
+                      });
+                    }}
+                    disabled={updateMaidMutation.isPending}
                   >
-                    {selectedMaid.isAvailable ? (
+                    {updateMaidMutation.isPending ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : selectedMaid.isAvailable ? (
                       <X className="mr-2 h-4 w-4" />
                     ) : (
                       <Check className="mr-2 h-4 w-4" />
