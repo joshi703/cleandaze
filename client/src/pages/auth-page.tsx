@@ -106,8 +106,14 @@ export default function AuthPage() {
         <div className="w-full md:w-1/2 flex items-center justify-center mb-8 md:mb-0">
           <Card className="w-full max-w-md border-cream">
             <CardHeader className="bg-cream-light rounded-t-lg">
-              <CardTitle className="text-2xl font-bold text-center text-black">
-                {activeTab === "login" ? "Login to CLEANDAZE" : "Create an Account"}
+              <CardTitle className="flex flex-col items-center gap-2 text-center text-black">
+                <div className="flex items-center gap-2">
+                  <img src="/images/cleandaze-logo.png" alt="CLEANDAZE Logo" className="h-8 w-auto" />
+                  <span className="text-2xl font-bold text-primary bg-gradient-to-r from-primary to-yellow-500 text-transparent bg-clip-text">CLEANDAZE</span>
+                </div>
+                <span className="text-xl font-bold mt-2">
+                  {activeTab === "login" ? "Login to your account" : "Create an Account"}
+                </span>
               </CardTitle>
               <CardDescription className="text-center text-black">
                 {activeTab === "login" 
@@ -270,7 +276,11 @@ export default function AuthPage() {
         <div className="w-full md:w-1/2 flex flex-col justify-center">
           <div className="max-w-lg mx-auto md:mx-0 text-center md:text-left">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-black">
-              Welcome to <span className="bg-gradient-to-r from-primary to-yellow-500 text-transparent bg-clip-text font-bold underline decoration-cream-dark decoration-4">CLEANDAZE</span>
+              Welcome to 
+              <div className="flex items-center gap-2 mt-2 justify-center md:justify-start">
+                <img src="/images/cleandaze-logo.png" alt="CLEANDAZE Logo" className="h-10 w-auto inline-block" />
+                <span className="bg-gradient-to-r from-primary to-yellow-500 text-transparent bg-clip-text font-bold underline decoration-cream-dark decoration-4">CLEANDAZE</span>
+              </div>
             </h1>
             <p className="text-xl mb-6 text-black">
               India's most affordable and accessible maid service platform. Connect with trusted maids in your area and book services with just a few clicks.
