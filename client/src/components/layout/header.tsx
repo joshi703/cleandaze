@@ -1,10 +1,16 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogIn, LogOut, User } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, logoutMutation } = useAuth();
+
+  const handleLogout = async () => {
+    await logoutMutation.mutateAsync();
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-200">
@@ -46,6 +52,27 @@ export default function Header() {
           
           {/* CTA Buttons */}
           <div className="hidden md:flex space-x-4">
+            {user ? (
+              <>
+                <Button asChild variant="ghost" className="gap-2">
+                  <Link href="/profile">
+                    <User className="h-4 w-4" />
+                    {user.name}
+                  </Link>
+                </Button>
+                <Button onClick={handleLogout} variant="outline" className="gap-2">
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <Button asChild variant="outline" className="gap-2">
+                <Link href="/auth">
+                  <LogIn className="h-4 w-4" />
+                  Login
+                </Link>
+              </Button>
+            )}
             <Button asChild variant="outline">
               <a href="#become-a-maid">Become a Maid</a>
             </Button>
@@ -102,6 +129,45 @@ export default function Header() {
             >
               Find a Maid
             </Link>
+            {user ? (
+              <>
+                <Button asChild className="w-full justify-center gap-2 mb-2" variant="ghost">
+                  <Link 
+                    href="/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <User className="h-4 w-4" />
+                    My Profile
+                  </Link>
+                </Button>
+                <Button 
+                  onClick={() => {
+                    handleLogout();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full justify-center gap-2 mb-2"
+                  variant="outline"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <Button 
+                asChild 
+                className="w-full justify-center gap-2 mb-2" 
+                variant="outline"
+              >
+                <Link 
+                  href="/auth"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <LogIn className="h-4 w-4" />
+                  Login / Register
+                </Link>
+              </Button>
+            )}
+            
             <Button asChild className="w-full justify-center mb-2" variant="outline">
               <a 
                 href="#become-a-maid"

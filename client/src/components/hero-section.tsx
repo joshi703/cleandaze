@@ -1,11 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, LogIn } from "lucide-react";
+import { Link } from "wouter";
+import { useAuth } from "@/hooks/use-auth";
 
 interface HeroSectionProps {
   count: number;
 }
 
 export default function HeroSection({ count = 500 }: HeroSectionProps) {
+  const { user } = useAuth();
+  
   return (
     <section className="pt-16 md:pt-24 pb-12 md:pb-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -62,6 +66,15 @@ export default function HeroSection({ count = 500 }: HeroSectionProps) {
                   Become a Maid
                 </a>
               </Button>
+              
+              {!user && (
+                <Button variant="ghost" size="lg" asChild className="mb-4 sm:mb-0 sm:ml-4 gap-2">
+                  <Link href="/auth">
+                    <LogIn className="h-5 w-5" />
+                    Sign In
+                  </Link>
+                </Button>
+              )}
             </div>
             
             <div className="mt-8 flex items-center text-gray-500">
