@@ -12,7 +12,7 @@ const faqs = [
   },
   {
     question: "What areas do you serve in India?",
-    answer: "homegleem is available in all major cities across India including Delhi, Mumbai, Bangalore, Hyderabad, Chennai, Kolkata, Pune, Ahmedabad, and more. We're rapidly expanding to tier-2 and tier-3 cities as well."
+    answer: "CAREASY is available in all major cities across India including Delhi, Mumbai, Bangalore, Hyderabad, Chennai, Kolkata, Pune, Ahmedabad, and more. We're rapidly expanding to tier-2 and tier-3 cities as well."
   },
   {
     question: "How much does the service cost?",

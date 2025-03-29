@@ -290,7 +290,7 @@ export default function Dashboard() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <p className="text-gray-600">Manage your homegleem platform</p>
+          <p className="text-gray-600">Manage your CAREASY platform</p>
         </div>
         <div className="mt-4 md:mt-0 flex items-center space-x-2">
           <Button 
@@ -401,7 +401,7 @@ export default function Dashboard() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p>Welcome to your homegleem admin dashboard. Here you can manage all aspects of your platform.</p>
+              <p>Welcome to your CAREASY admin dashboard. Here you can manage all aspects of your platform.</p>
               
               <div className="mt-4">
                 <h3 className="font-medium mb-2">Quick Actions</h3>
@@ -667,7 +667,7 @@ export default function Dashboard() {
             <CardHeader>
               <CardTitle>Platform Settings</CardTitle>
               <CardDescription>
-                Configure your homegleem platform settings
+                Configure your CAREASY platform settings
               </CardDescription>
             </CardHeader>
             <CardContent>

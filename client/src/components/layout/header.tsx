@@ -19,7 +19,7 @@ export default function Header() {
           <div className="flex items-center">
             {/* Logo */}
             <Link href="/" className="flex items-center">
-              <img src="/homegleem-logo.png" alt="homegleem logo" className="h-16" />
+              <span className="text-2xl font-bold text-primary bg-gradient-to-r from-primary to-yellow-500 text-transparent bg-clip-text">CAREASY</span>
             </Link>
           </div>
           
