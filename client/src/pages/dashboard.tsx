@@ -110,8 +110,19 @@ export default function Dashboard() {
   // Mutations for updating data
   const createMaidMutation = useMutation({
     mutationFn: async (maidData: any) => {
-      const res = await apiRequest("POST", "/api/maids", maidData);
-      return res.json();
+      try {
+        console.log("Sending maid data:", maidData);
+        const res = await apiRequest("POST", "/api/maids", maidData);
+        if (!res.ok) {
+          // Try to parse the error message
+          const errorData = await res.json();
+          throw new Error(errorData.message || "Failed to add new maid");
+        }
+        return res.json();
+      } catch (error) {
+        console.error("Error in createMaidMutation:", error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/maids"] });
@@ -1068,10 +1079,33 @@ export default function Dashboard() {
               <Button 
                 onClick={() => {
                   const isAvailable = document.getElementById('available') as HTMLInputElement;
-                  createMaidMutation.mutate({
-                    ...newMaidData,
-                    isAvailable: isAvailable?.checked || true
-                  });
+                  // Validate required fields
+                  if (!newMaidData.name || !newMaidData.email || !newMaidData.phone || !newMaidData.city || !newMaidData.locality) {
+                    toast({
+                      title: "Error",
+                      description: "Please fill in all required fields",
+                      variant: "destructive"
+                    });
+                    return;
+                  }
+                  
+                  // Create a proper maid object with all required fields
+                  const maidToCreate = {
+                    name: newMaidData.name,
+                    email: newMaidData.email,
+                    phone: newMaidData.phone,
+                    city: newMaidData.city,
+                    locality: newMaidData.locality,
+                    address: newMaidData.address || "",
+                    experience: newMaidData.experience || "",
+                    services: newMaidData.services,
+                    isAvailable: isAvailable?.checked ?? true
+                  };
+                  
+                  console.log("Submitting maid data:", maidToCreate);
+                  
+                  // Submit the data
+                  createMaidMutation.mutate(maidToCreate);
                 }}
                 disabled={createMaidMutation.isPending}
               >

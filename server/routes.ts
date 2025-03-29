@@ -63,11 +63,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Maid API routes
   app.post("/api/maids", async (req: Request, res: Response) => {
     try {
+      console.log("Received maid registration request:", JSON.stringify(req.body));
+      
       // Validate the request body against the schema
       const result = insertMaidSchema.safeParse(req.body);
       
       if (!result.success) {
         const validationError = fromZodError(result.error);
+        console.log("Validation error:", validationError.details);
         return res.status(400).json({
           message: "Validation error",
           errors: validationError.details
