@@ -75,6 +75,7 @@ export class MemStorage implements IStorage {
     
     // Initialize with sample data
     this.initializeSampleMaids();
+    this.initializeSampleBookings();
     // Initialize admin user and company settings
     this.initialize();
   }
@@ -125,6 +126,103 @@ export class MemStorage implements IStorage {
         servicesOffered: ["Cleaning", "Cooking", "Child Care", "Elderly Care", "Laundry", "Pet Care"],
         operatingHours: "Monday to Saturday, 8:00 AM to 8:00 PM"
       } as InsertCompanySettings);
+    }
+  }
+  
+  private initializeSampleBookings() {
+    // Only create sample bookings if none exist
+    if (this.bookings.size === 0) {
+      // Create sample customers for bookings if we don't have any
+      if (this.users.size <= 1) { // If we only have admin user
+        const sampleCustomers = [
+          {
+            username: "rahul_kumar",
+            password: "password123", // In a real app, this would be hashed
+            email: "rahul.kumar@example.com",
+            name: "Rahul Kumar",
+            role: "customer"
+          },
+          {
+            username: "neha_gupta",
+            password: "password123", // In a real app, this would be hashed
+            email: "neha.gupta@example.com",
+            name: "Neha Gupta",
+            role: "customer"
+          }
+        ];
+        
+        sampleCustomers.forEach((customer) => {
+          const id = this.currentUserId++;
+          const createdAt = new Date().toISOString();
+          this.users.set(id, { ...customer, id, createdAt });
+        });
+      }
+      
+      // Sample bookings with different statuses
+      const sampleBookings = [
+        {
+          userId: 2, // User Rahul
+          maidId: 1, // Priya Sharma
+          serviceType: "Cleaning",
+          bookingDate: "2025-03-25T10:00:00.000Z",
+          duration: 3,
+          amount: 600,
+          notes: "Weekly cleaning",
+          status: "completed",
+          createdAt: "2025-03-20T08:30:00.000Z"
+        },
+        {
+          userId: 2, // User Rahul
+          maidId: 3, // Lakshmi Reddy
+          serviceType: "Cooking",
+          bookingDate: "2025-03-30T15:00:00.000Z",
+          duration: 2,
+          amount: 500,
+          notes: "Special occasion cooking",
+          status: "confirmed",
+          createdAt: "2025-03-25T14:15:00.000Z"
+        },
+        {
+          userId: 3, // User Neha
+          maidId: 2, // Anjali Patel
+          serviceType: "Laundry",
+          bookingDate: "2025-03-28T09:00:00.000Z",
+          duration: 2,
+          amount: 300,
+          notes: "Wash and iron clothes",
+          status: "pending",
+          createdAt: "2025-03-26T17:45:00.000Z"
+        },
+        {
+          userId: 3, // User Neha
+          maidId: 4, // Meena Kumari
+          serviceType: "Child Care",
+          bookingDate: "2025-04-01T08:00:00.000Z",
+          duration: 6,
+          amount: 1200,
+          notes: "Take care of 5-year-old",
+          status: "pending",
+          createdAt: "2025-03-27T09:20:00.000Z"
+        },
+        {
+          userId: 2, // User Rahul
+          maidId: 6, // Rekha Mishra
+          serviceType: "Elder Care",
+          bookingDate: "2025-03-29T14:00:00.000Z",
+          duration: 4,
+          amount: 800,
+          notes: "Care for elderly parent",
+          status: "cancelled",
+          createdAt: "2025-03-22T11:10:00.000Z"
+        }
+      ];
+      
+      // Add each sample booking to storage
+      sampleBookings.forEach((booking, index) => {
+        const id = index + 1; // Start with booking ID 1
+        this.bookings.set(id, { ...booking, id });
+        this.currentBookingId = id + 1; // Update the booking ID counter
+      });
     }
   }
   
