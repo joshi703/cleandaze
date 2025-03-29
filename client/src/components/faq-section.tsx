@@ -7,24 +7,32 @@ import {
 
 const faqs = [
   {
-    question: "When will the product launch?",
-    answer: "We're planning to launch in Q3 of this year. By joining the waitlist, you'll be among the first to know when we go live and get early access."
+    question: "How do I book a maid service?",
+    answer: "You can book a service through our website or mobile app. Simply select the type of service you need, choose a convenient date and time, provide your address details, and confirm your booking."
   },
   {
-    question: "Will there be a free plan?",
-    answer: "Yes, we'll offer a free tier with essential features. Premium plans will be available for users who need advanced capabilities."
+    question: "What areas do you serve in India?",
+    answer: "MaidEasy is available in all major cities across India including Delhi, Mumbai, Bangalore, Hyderabad, Chennai, Kolkata, Pune, Ahmedabad, and more. We're rapidly expanding to tier-2 and tier-3 cities as well."
   },
   {
-    question: "How secure is my data?",
-    answer: "Security is our top priority. We use industry-standard encryption, regular security audits, and strict access controls to protect your data."
+    question: "How much does the service cost?",
+    answer: "Our pricing starts from as low as ₹299 for basic cleaning services. The exact cost depends on the type of service, size of your home, and your location. You can get an instant quote by entering your requirements through our booking form."
   },
   {
-    question: "What platforms do you support?",
-    answer: "Our product will be available on web, iOS, and Android at launch, with desktop applications coming shortly after."
+    question: "Are your maids verified and trustworthy?",
+    answer: "Yes, all our maids undergo a thorough verification process including background checks, skill assessment, and training. We verify their identity, address, and previous work experience before they join our platform."
   },
   {
-    question: "Is there a referral program?",
-    answer: "Yes! After joining the waitlist, you'll receive a unique referral link. For each friend who signs up with your link, you'll both get additional benefits at launch."
+    question: "What if I'm not satisfied with the service?",
+    answer: "Customer satisfaction is our top priority. If you're not satisfied with the service, please report it within 24 hours and we'll arrange for a re-cleaning at no additional cost. We also offer partial or full refunds depending on the situation."
+  },
+  {
+    question: "Can I request the same maid for regular cleaning?",
+    answer: "Yes, if you like a particular maid's service, you can request the same professional for future bookings. This option is available for subscription plans, subject to the maid's availability."
+  },
+  {
+    question: "What cleaning supplies are used?",
+    answer: "Our maids bring their own basic cleaning equipment. However, for specific cleaning products, you may need to provide them or you can request premium cleaning packages where we provide eco-friendly cleaning supplies at an additional cost."
   }
 ];
 
@@ -34,7 +42,7 @@ export default function FaqSection() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Frequently Asked Questions</h2>
-          <p className="mt-4 text-xl text-gray-600">Everything you need to know about our product</p>
+          <p className="mt-4 text-xl text-gray-600">Everything you need to know about our maid services</p>
         </div>
         
         <div className="max-w-3xl mx-auto">

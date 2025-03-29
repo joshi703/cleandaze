@@ -13,15 +13,16 @@ export default function Header() {
           <div className="flex items-center">
             {/* Logo */}
             <Link href="/" className="flex items-center">
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-xl">P</div>
-              <span className="ml-2 text-xl font-bold text-gray-900">ProductName</span>
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-xl">M</div>
+              <span className="ml-2 text-xl font-bold text-gray-900">MaidEasy</span>
             </Link>
           </div>
           
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
-            <a href="#features" className="text-base font-medium text-gray-700 hover:text-primary transition-colors">Features</a>
+            <a href="#services" className="text-base font-medium text-gray-700 hover:text-primary transition-colors">Services</a>
             <a href="#how-it-works" className="text-base font-medium text-gray-700 hover:text-primary transition-colors">How it Works</a>
+            <a href="#pricing" className="text-base font-medium text-gray-700 hover:text-primary transition-colors">Pricing</a>
             <a href="#faq" className="text-base font-medium text-gray-700 hover:text-primary transition-colors">FAQ</a>
           </nav>
           
@@ -41,10 +42,13 @@ export default function Header() {
             </Button>
           </div>
           
-          {/* CTA Button */}
-          <div className="hidden md:block">
+          {/* CTA Buttons */}
+          <div className="hidden md:flex space-x-4">
+            <Button asChild variant="outline">
+              <a href="#become-a-maid">Become a Maid</a>
+            </Button>
             <Button asChild>
-              <a href="#waitlist">Join Waitlist</a>
+              <a href="#book-service">Book a Service</a>
             </Button>
           </div>
         </div>
@@ -55,11 +59,11 @@ export default function Header() {
         <div className="md:hidden bg-white border-t border-gray-200 px-4 py-3 animate-in fade-in">
           <nav className="flex flex-col space-y-4">
             <a 
-              href="#features" 
+              href="#services" 
               className="text-base font-medium text-gray-700 hover:text-primary transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Features
+              Services
             </a>
             <a 
               href="#how-it-works" 
@@ -69,18 +73,33 @@ export default function Header() {
               How it Works
             </a>
             <a 
+              href="#pricing" 
+              className="text-base font-medium text-gray-700 hover:text-primary transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Pricing
+            </a>
+            <a 
               href="#faq" 
               className="text-base font-medium text-gray-700 hover:text-primary transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
               FAQ
             </a>
-            <Button asChild className="w-full justify-center">
+            <Button asChild className="w-full justify-center mb-2" variant="outline">
               <a 
-                href="#waitlist"
+                href="#become-a-maid"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Join Waitlist
+                Become a Maid
+              </a>
+            </Button>
+            <Button asChild className="w-full justify-center">
+              <a 
+                href="#book-service"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Book a Service
               </a>
             </Button>
           </nav>

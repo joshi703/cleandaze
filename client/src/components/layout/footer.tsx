@@ -7,12 +7,12 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-2">
             <div className="flex items-center">
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-xl">P</div>
-              <span className="ml-2 text-xl font-bold text-white">ProductName</span>
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-xl">M</div>
+              <span className="ml-2 text-xl font-bold text-white">MaidEasy</span>
             </div>
             <p className="mt-4 text-gray-400 max-w-md">
-              Our revolutionary platform helps businesses streamline workflows, boost productivity, 
-              and achieve goals faster than ever before.
+              Professional and affordable maid services across India. MaidEasy makes it simple to book 
+              reliable cleaning services for your home or become a maid on our platform.
             </p>
             <div className="mt-6 flex space-x-4">
               <a 
@@ -40,33 +40,34 @@ export default function Footer() {
             </div>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider">Product</h3>
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider">Services</h3>
             <ul className="mt-4 space-y-2">
-              <li><a href="#features" className="text-gray-400 hover:text-white transition-colors">Features</a></li>
-              <li><a href="#how-it-works" className="text-gray-400 hover:text-white transition-colors">How It Works</a></li>
-              <li><a href="#faq" className="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Roadmap</a></li>
+              <li><a href="#services" className="text-gray-400 hover:text-white transition-colors">Regular Cleaning</a></li>
+              <li><a href="#services" className="text-gray-400 hover:text-white transition-colors">Deep Cleaning</a></li>
+              <li><a href="#pricing" className="text-gray-400 hover:text-white transition-colors">Pricing</a></li>
+              <li><a href="#book-service" className="text-gray-400 hover:text-white transition-colors">Book a Service</a></li>
             </ul>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider">Company</h3>
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider">Support</h3>
             <ul className="mt-4 space-y-2">
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">About</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Blog</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Careers</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+              <li><a href="#how-it-works" className="text-gray-400 hover:text-white transition-colors">How It Works</a></li>
+              <li><a href="#faq" className="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
+              <li><a href="#become-a-maid" className="text-gray-400 hover:text-white transition-colors">Become a Maid</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Contact Us</a></li>
             </ul>
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-gray-800 text-sm text-gray-400">
           <div className="flex flex-col md:flex-row justify-between">
-            <p>&copy; {new Date().getFullYear()} ProductName. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} MaidEasy. All rights reserved.</p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
               <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
               <a href="#" className="hover:text-white transition-colors">Cookie Policy</a>
             </div>
           </div>
+          <p className="mt-4 text-center text-gray-500">Serving all major cities across India</p>
         </div>
       </div>
     </footer>

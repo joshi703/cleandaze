@@ -1,18 +1,25 @@
+import { Button } from "@/components/ui/button";
+
 const steps = [
   {
     number: 1,
-    title: "Sign Up",
-    description: "Join our waitlist to be among the first to experience our revolutionary platform."
+    title: "Book a Service",
+    description: "Select the cleaning service you need and choose a convenient date and time slot."
   },
   {
     number: 2,
-    title: "Get Early Access",
-    description: "As a waitlist member, you'll be first in line when we launch with special early adopter benefits."
+    title: "Get Matched",
+    description: "We'll match you with a verified, experienced maid professional in your area."
   },
   {
     number: 3,
-    title: "Transform Your Workflow",
-    description: "Experience the power of our platform and see immediate improvements in your productivity."
+    title: "Hassle-free Cleaning",
+    description: "Your assigned professional will arrive on time and complete the cleaning to your satisfaction."
+  },
+  {
+    number: 4,
+    title: "Pay Securely",
+    description: "Pay only after the service is completed to your satisfaction. Multiple payment options available."
   }
 ];
 
@@ -22,10 +29,10 @@ export default function HowItWorks() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900">How It Works</h2>
-          <p className="mt-4 text-xl text-gray-600">Simple steps to transform your workflow</p>
+          <p className="mt-4 text-xl text-gray-600">Book a professional maid service in just a few simple steps</p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mt-12">
           {steps.map((step, index) => (
             <div key={index} className="relative">
               <div className="absolute top-0 left-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-xl font-bold text-primary">{step.number}</div>
@@ -42,6 +49,12 @@ export default function HowItWorks() {
               )}
             </div>
           ))}
+        </div>
+        
+        <div className="mt-16 text-center">
+          <Button asChild size="lg" className="px-8">
+            <a href="#book-service">Book Your First Cleaning</a>
+          </Button>
         </div>
       </div>
     </section>

@@ -3,28 +3,39 @@ import Footer from "@/components/layout/footer";
 import HeroSection from "@/components/hero-section";
 import FeaturesSection from "@/components/features-section";
 import HowItWorks from "@/components/how-it-works";
+import PricingSection from "@/components/pricing-section";
 import FaqSection from "@/components/faq-section";
-import WaitlistForm from "@/components/waitlist-form";
+import BookServiceForm from "@/components/book-service-form";
+import BecomeMaidForm from "@/components/become-maid-form";
 import CtaSection from "@/components/cta-section";
 import { useQuery } from "@tanstack/react-query";
 
+// Type for the response from /api/waitlist/count
+interface CountResponse {
+  count: number;
+}
+
 export default function Home() {
-  // Get waitlist count from API
-  const { data: waitlistCount } = useQuery({
+  // Get customer count from API
+  const { data } = useQuery<CountResponse>({
     queryKey: ['/api/waitlist/count'],
-    queryFn: undefined,
   });
+  
+  // Use 500 as fallback if data isn't loaded yet
+  const count = data?.count ?? 500;
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
       
       <main className="flex-grow">
-        <HeroSection count={waitlistCount?.count || 500} />
+        <HeroSection count={count} />
         <FeaturesSection />
         <HowItWorks />
+        <PricingSection />
+        <BookServiceForm />
+        <BecomeMaidForm />
         <FaqSection />
-        <WaitlistForm />
         <CtaSection />
       </main>
       
