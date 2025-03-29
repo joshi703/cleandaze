@@ -25,7 +25,7 @@ export default function HeroSection({ count = 500 }: HeroSectionProps) {
               Affordable <span className="text-primary">Maid Services</span> Across India
             </h1>
             <p className="mt-6 text-lg md:text-xl text-gray-600 max-w-2xl">
-              Book reliable, affordable maid services at your fingertips. CAREASY connects you with trusted 
+              Book reliable, affordable maid services at your fingertips. CLEANDAZE connects you with trusted 
               housekeeping professionals for all your home cleaning needs.
             </p>
             

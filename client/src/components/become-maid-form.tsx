@@ -208,7 +208,7 @@ export default function BecomeMaidForm() {
     <section id="become-a-maid" className="py-12 md:py-24 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Become a CAREASY Professional</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Become a CLEANDAZE Professional</h2>
           <p className="mt-4 text-xl text-gray-600">
             Join our network of trusted maid professionals and earn a steady income
           </p>
@@ -524,7 +524,7 @@ export default function BecomeMaidForm() {
                         </FormControl>
                         <div className="space-y-1 leading-none">
                           <FormLabel className="text-sm font-normal">
-                            I consent to a background verification check which is mandatory to join the CAREASY platform
+                            I consent to a background verification check which is mandatory to join the CLEANDAZE platform
                           </FormLabel>
                           <FormMessage />
                         </div>

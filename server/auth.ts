@@ -30,7 +30,7 @@ async function comparePasswords(supplied: string, stored: string) {
 
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET || "maideasy-dev-secret", // In production, this should be an environment variable
+    secret: process.env.SESSION_SECRET || "cleandaze-dev-secret", // In production, this should be an environment variable
     resave: false,
     saveUninitialized: false,
     store: storage.sessionStore,

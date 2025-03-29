@@ -107,7 +107,7 @@ export class MemStorage implements IStorage {
       await this.createUser({
         username: "admin",
         password: await hashPassword("admin123"),
-        email: "admin@maideasy.com",
+        email: "admin@cleandaze.com",
         name: "Admin User",
         role: "admin"
       } as InsertUser);
@@ -118,8 +118,8 @@ export class MemStorage implements IStorage {
     const settings = await this.getCompanySettings();
     if (!settings) {
       await this.createOrUpdateCompanySettings({
-        companyName: "CAREASY",
-        contactEmail: "contact@careasy.com",
+        companyName: "CLEANDAZE",
+        contactEmail: "contact@cleandaze.com",
         contactPhone: "+91 9876543210",
         address: "123 Main Street, Mumbai, India",
         logo: "/logo.png",

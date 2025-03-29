@@ -19,7 +19,7 @@ export default function Header() {
           <div className="flex items-center">
             {/* Logo */}
             <Link href="/" className="flex items-center">
-              <span className="text-2xl font-bold text-primary bg-gradient-to-r from-primary to-yellow-500 text-transparent bg-clip-text">CAREASY</span>
+              <span className="text-2xl font-bold text-primary bg-gradient-to-r from-primary to-yellow-500 text-transparent bg-clip-text">CLEANDAZE</span>
             </Link>
           </div>
           

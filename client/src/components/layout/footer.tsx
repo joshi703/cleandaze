@@ -7,10 +7,10 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-2">
             <div className="flex items-center">
-              <span className="text-2xl font-bold bg-gradient-to-r from-yellow-100 to-yellow-300 text-transparent bg-clip-text">CAREASY</span>
+              <span className="text-2xl font-bold bg-gradient-to-r from-yellow-100 to-yellow-300 text-transparent bg-clip-text">CLEANDAZE</span>
             </div>
             <p className="mt-4 text-gray-400 max-w-md">
-              Professional and affordable maid services across India. CAREASY makes it simple to book 
+              Professional and affordable maid services across India. CLEANDAZE makes it simple to book 
               reliable cleaning services for your home or become a maid on our platform.
             </p>
             <div className="mt-6 flex space-x-4">
@@ -59,7 +59,7 @@ export default function Footer() {
         </div>
         <div className="mt-12 pt-8 border-t border-gray-800 text-sm text-gray-400">
           <div className="flex flex-col md:flex-row justify-between">
-            <p>&copy; {new Date().getFullYear()} CAREASY. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} CLEANDAZE. All rights reserved.</p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
               <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
