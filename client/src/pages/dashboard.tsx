@@ -30,7 +30,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Booking, Maid, CompanySettings } from "@shared/schema";
-import { Loader2, UserCheck, Calendar, Settings, Check, X, AlertCircle } from "lucide-react";
+import { Loader2, UserCheck, UserPlus, Calendar, Settings, Check, X, AlertCircle } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 
 export default function Dashboard() {
@@ -39,9 +39,21 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedMaid, setSelectedMaid] = useState<Maid | null>(null);
   const [isApprovalDialogOpen, setIsApprovalDialogOpen] = useState(false);
+  const [isMaidDetailsDialogOpen, setIsMaidDetailsDialogOpen] = useState(false);
+  const [isNewMaidDialogOpen, setIsNewMaidDialogOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [isBookingDialogOpen, setIsBookingDialogOpen] = useState(false);
   const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
+  const [newMaidData, setNewMaidData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    city: "",
+    locality: "",
+    address: "",
+    experience: "",
+    services: [] as string[]
+  });
   const [settingsFormData, setSettingsFormData] = useState({
     companyName: "",
     contactEmail: "",
@@ -96,6 +108,39 @@ export default function Dashboard() {
   }, [companySettings]);
   
   // Mutations for updating data
+  const createMaidMutation = useMutation({
+    mutationFn: async (maidData: any) => {
+      const res = await apiRequest("POST", "/api/maids", maidData);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/maids"] });
+      toast({
+        title: "Success",
+        description: "New maid added successfully",
+      });
+      setIsNewMaidDialogOpen(false);
+      // Reset form data
+      setNewMaidData({
+        name: "",
+        email: "",
+        phone: "",
+        city: "",
+        locality: "",
+        address: "",
+        experience: "",
+        services: []
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add new maid",
+        variant: "destructive",
+      });
+    }
+  });
+  
   const updateMaidMutation = useMutation({
     mutationFn: async ({ id, isAvailable }: { id: number, isAvailable: boolean }) => {
       const res = await apiRequest("PATCH", `/api/maids/${id}/availability`, { isAvailable });
@@ -108,6 +153,7 @@ export default function Dashboard() {
         description: `Maid status updated successfully`,
       });
       setIsApprovalDialogOpen(false);
+      setIsMaidDetailsDialogOpen(false);
     },
     onError: (error: any) => {
       toast({
@@ -223,7 +269,8 @@ export default function Dashboard() {
           <Button variant="outline" className="mr-2">
             Export Data
           </Button>
-          <Button>
+          <Button onClick={() => setIsNewMaidDialogOpen(true)}>
+            <UserPlus className="mr-2 h-4 w-4" />
             New Maid
           </Button>
         </div>
@@ -408,7 +455,16 @@ export default function Dashboard() {
                           </div>
                         </div>
                         <div>
-                          <Button size="sm" variant="outline">View</Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedMaid(maid);
+                              setIsMaidDetailsDialogOpen(true);
+                            }}
+                          >
+                            View
+                          </Button>
                         </div>
                       </div>
                     ))}
@@ -531,7 +587,16 @@ export default function Dashboard() {
                         >
                           {maid.isAvailable ? 'Suspend' : 'Approve'}
                         </Button>
-                        <Button size="sm" variant="outline">View</Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => {
+                            setSelectedMaid(maid);
+                            setIsMaidDetailsDialogOpen(true);
+                          }}
+                        >
+                          View
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -801,6 +866,224 @@ export default function Dashboard() {
               {updateSettingsMutation.isPending ? "Saving..." : "Save Changes"}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Maid Details Dialog */}
+      <Dialog open={isMaidDetailsDialogOpen} onOpenChange={setIsMaidDetailsDialogOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Maid Details</DialogTitle>
+            <DialogDescription>
+              View detailed information about this maid
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedMaid && (
+            <div className="py-4">
+              <div className="flex items-center mb-6">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium text-xl mr-4">
+                  {selectedMaid.name.charAt(0)}
+                </div>
+                <div>
+                  <h3 className="font-semibold text-xl">{selectedMaid.name}</h3>
+                  <p className="text-sm text-gray-500">{selectedMaid.city}, {selectedMaid.locality}</p>
+                </div>
+                <div className="ml-auto">
+                  <span className={`px-3 py-1 rounded-full text-sm font-semibold 
+                    ${selectedMaid.isAvailable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
+                  >
+                    {selectedMaid.isAvailable ? 'Available' : 'Unavailable'}
+                  </span>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium mb-1">Contact Information</h4>
+                    <div className="bg-gray-50 p-3 rounded-md">
+                      <p><span className="font-medium">Email:</span> {selectedMaid.email}</p>
+                      <p><span className="font-medium">Phone:</span> {selectedMaid.phone}</p>
+                      <p><span className="font-medium">Address:</span> {selectedMaid.address || 'Not provided'}</p>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium mb-1">Experience</h4>
+                    <div className="bg-gray-50 p-3 rounded-md">
+                      <p>{selectedMaid.experience || 'No experience information provided'}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium mb-1">Services Offered</h4>
+                    <div className="bg-gray-50 p-3 rounded-md min-h-[100px]">
+                      {selectedMaid.services && selectedMaid.services.length > 0 ? (
+                        <ul className="list-disc pl-5">
+                          {selectedMaid.services.map((service, index) => (
+                            <li key={index}>{service}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-gray-500">No services specified</p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium mb-1">Registration Date</h4>
+                    <div className="bg-gray-50 p-3 rounded-md">
+                      <p>{new Date(selectedMaid.joinedAt).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="border-t pt-4">
+                <h4 className="font-medium mb-2">Admin Actions</h4>
+                <div className="flex space-x-3">
+                  <Button 
+                    variant={selectedMaid.isAvailable ? "destructive" : "default"}
+                    onClick={handleUpdateMaidStatus}
+                  >
+                    {selectedMaid.isAvailable ? (
+                      <X className="mr-2 h-4 w-4" />
+                    ) : (
+                      <Check className="mr-2 h-4 w-4" />
+                    )}
+                    {selectedMaid.isAvailable ? "Suspend Maid" : "Approve Maid"}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsMaidDetailsDialogOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* New Maid Dialog */}
+      <Dialog open={isNewMaidDialogOpen} onOpenChange={setIsNewMaidDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add New Maid</DialogTitle>
+            <DialogDescription>
+              Enter the details to register a new maid on the platform
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <Label htmlFor="name">Full Name</Label>
+                <Input 
+                  id="name" 
+                  value={newMaidData.name} 
+                  onChange={e => setNewMaidData({...newMaidData, name: e.target.value})}
+                  placeholder="Enter full name"
+                />
+              </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input 
+                  id="email" 
+                  type="email"
+                  value={newMaidData.email} 
+                  onChange={e => setNewMaidData({...newMaidData, email: e.target.value})}
+                  placeholder="email@example.com"
+                />
+              </div>
+              <div>
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input 
+                  id="phone" 
+                  value={newMaidData.phone} 
+                  onChange={e => setNewMaidData({...newMaidData, phone: e.target.value})}
+                  placeholder="+91 1234567890"
+                />
+              </div>
+              <div>
+                <Label htmlFor="city">City</Label>
+                <Input 
+                  id="city" 
+                  value={newMaidData.city} 
+                  onChange={e => setNewMaidData({...newMaidData, city: e.target.value})}
+                  placeholder="Mumbai"
+                />
+              </div>
+              <div>
+                <Label htmlFor="locality">Locality/Area</Label>
+                <Input 
+                  id="locality" 
+                  value={newMaidData.locality} 
+                  onChange={e => setNewMaidData({...newMaidData, locality: e.target.value})}
+                  placeholder="Andheri"
+                />
+              </div>
+              <div>
+                <Label htmlFor="address">Address</Label>
+                <Input 
+                  id="address" 
+                  value={newMaidData.address} 
+                  onChange={e => setNewMaidData({...newMaidData, address: e.target.value})}
+                  placeholder="Full address"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <Label htmlFor="experience">Experience</Label>
+                <Textarea 
+                  id="experience" 
+                  value={newMaidData.experience} 
+                  onChange={e => setNewMaidData({...newMaidData, experience: e.target.value})}
+                  placeholder="Years of experience and previous work details"
+                  className="min-h-[80px]"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <Label htmlFor="services">Services (comma separated)</Label>
+                <Input 
+                  id="services" 
+                  value={newMaidData.services.join(", ")} 
+                  onChange={e => setNewMaidData({
+                    ...newMaidData, 
+                    services: e.target.value.split(",").map(s => s.trim()).filter(Boolean)
+                  })}
+                  placeholder="Cleaning, Cooking, Childcare"
+                />
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-2 mb-4">
+              <Switch id="available" defaultChecked />
+              <Label htmlFor="available">Mark as available</Label>
+            </div>
+            
+            <div className="border-t pt-4 flex justify-end space-x-3">
+              <Button variant="outline" onClick={() => setIsNewMaidDialogOpen(false)}>Cancel</Button>
+              <Button 
+                onClick={() => {
+                  const isAvailable = document.getElementById('available') as HTMLInputElement;
+                  createMaidMutation.mutate({
+                    ...newMaidData,
+                    isAvailable: isAvailable?.checked || true
+                  });
+                }}
+                disabled={createMaidMutation.isPending}
+              >
+                {createMaidMutation.isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <UserPlus className="mr-2 h-4 w-4" />
+                )}
+                {createMaidMutation.isPending ? "Adding..." : "Add Maid"}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
