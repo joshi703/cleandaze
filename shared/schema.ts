@@ -16,6 +16,19 @@ export const waitlistEntries = pgTable("waitlist_entries", {
   joinedAt: text("joined_at").notNull(),
 });
 
+export const maids = pgTable("maids", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  phone: text("phone").notNull(),
+  city: text("city").notNull(),
+  locality: text("locality").notNull(),
+  address: text("address"),
+  experience: text("experience"),
+  services: text("services").array(),
+  joinedAt: text("joined_at").notNull(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -27,8 +40,22 @@ export const insertWaitlistSchema = createInsertSchema(waitlistEntries).pick({
   company: true,
 });
 
+export const insertMaidSchema = createInsertSchema(maids).pick({
+  name: true,
+  email: true,
+  phone: true,
+  city: true,
+  locality: true,
+  address: true,
+  experience: true,
+  services: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 
 export type InsertWaitlistEntry = z.infer<typeof insertWaitlistSchema>;
 export type WaitlistEntry = typeof waitlistEntries.$inferSelect;
+
+export type InsertMaid = z.infer<typeof insertMaidSchema>;
+export type Maid = typeof maids.$inferSelect;

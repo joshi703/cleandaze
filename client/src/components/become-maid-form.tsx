@@ -17,11 +17,11 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { insertWaitlistSchema } from "@shared/schema";
+import { insertMaidSchema } from "@shared/schema";
 import { Loader2, CheckCircle2 } from "lucide-react";
 
 // Extended schema with additional fields for maid registration
-const formSchema = insertWaitlistSchema.extend({
+const formSchema = insertMaidSchema.extend({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
   }),
@@ -143,12 +143,36 @@ export default function BecomeMaidForm() {
     setSubmitting(true);
     
     try {
-      // Extract only the fields we want to send to the API
-      const { privacyPolicy, backgroundCheckConsent, ...dataToSubmit } = values;
+      // Extract fields needed for the maid registration API
+      const {
+        privacyPolicy,
+        backgroundCheckConsent,
+        age,
+        gender,
+        skillsSets,
+        availabilityTime,
+        availabilityDays,
+        idType,
+        idNumber,
+        resume,
+        ...maidData
+      } = values;
       
-      // This will send to the waitlist API for now
-      // In a real implementation, we would create a separate API endpoint for maid registration
-      const response = await apiRequest("POST", "/api/waitlist", dataToSubmit);
+      // Create services array from skills
+      const services = [skillsSets];
+      
+      // Add locality field from skillsSets or a default value (required by schema)
+      const locality = values.address.split(',').pop()?.trim() || 'Unknown';
+      
+      // Prepare data for API
+      const dataToSubmit = {
+        ...maidData,
+        locality,
+        services
+      };
+      
+      // Send to the maids API endpoint
+      const response = await apiRequest("POST", "/api/maids", dataToSubmit);
       const result = await response.json();
       
       setSuccess(true);
