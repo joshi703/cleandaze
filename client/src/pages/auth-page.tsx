@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,11 +36,12 @@ export default function AuthPage() {
   const [, setLocation] = useLocation();
   const { user, loginMutation, registerMutation } = useAuth();
   
-  // Redirect if already logged in
-  if (user) {
-    setLocation(user.role === "admin" ? "/dashboard" : "/");
-    return null;
-  }
+  // Handle redirect inside useEffect to avoid React hook errors
+  useEffect(() => {
+    if (user) {
+      setLocation(user.role === "admin" ? "/dashboard" : "/");
+    }
+  }, [user, setLocation]);
 
   const loginForm = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),

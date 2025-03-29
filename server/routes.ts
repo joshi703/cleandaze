@@ -171,6 +171,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+  
+  // Update maid availability status
+  app.patch("/api/maids/:id/availability", async (req: Request, res: Response) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      // Check if user is admin
+      const user = req.user as any;
+      if (user.role !== "admin") {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const id = parseInt(req.params.id, 10);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+      }
+      
+      const { isAvailable } = req.body;
+      if (typeof isAvailable !== "boolean") {
+        return res.status(400).json({ message: "isAvailable must be a boolean" });
+      }
+      
+      const updatedMaid = await storage.updateMaidAvailability(id, isAvailable);
+      if (!updatedMaid) {
+        return res.status(404).json({ message: "Maid not found" });
+      }
+      
+      return res.status(200).json({ 
+        message: `Maid ${isAvailable ? 'approved' : 'suspended'} successfully`,
+        data: updatedMaid
+      });
+    } catch (error) {
+      console.error("Error updating maid availability:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
 
   // Booking API routes
   app.post("/api/bookings", async (req: Request, res: Response) => {

@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import {
   Tabs,
@@ -15,14 +16,43 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Booking, Maid } from "@shared/schema";
-import { Loader2, UserCheck, Calendar, Settings } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Booking, Maid, CompanySettings } from "@shared/schema";
+import { Loader2, UserCheck, Calendar, Settings, Check, X, AlertCircle } from "lucide-react";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
+  const [selectedMaid, setSelectedMaid] = useState<Maid | null>(null);
+  const [isApprovalDialogOpen, setIsApprovalDialogOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [isBookingDialogOpen, setIsBookingDialogOpen] = useState(false);
+  const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
+  const [settingsFormData, setSettingsFormData] = useState({
+    companyName: "",
+    contactEmail: "",
+    contactPhone: "",
+    address: "",
+    logo: "",
+    servicesOffered: [] as string[],
+    operatingHours: ""
+  });
   
+  // Queries for data fetching
   const { data: maids, isLoading: maidsLoading } = useQuery<Maid[]>({
     queryKey: ["/api/maids"],
     queryFn: async () => {
@@ -40,6 +70,127 @@ export default function Dashboard() {
       return data.bookings;
     },
   });
+  
+  const { data: companySettings, isLoading: settingsLoading } = useQuery<CompanySettings>({
+    queryKey: ["/api/company-settings"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", "/api/company-settings");
+      const data = await res.json();
+      return data.settings;
+    }
+  });
+  
+  // Update settings form data when settings are loaded
+  useEffect(() => {
+    if (companySettings) {
+      setSettingsFormData({
+        companyName: companySettings.companyName,
+        contactEmail: companySettings.contactEmail,
+        contactPhone: companySettings.contactPhone || "",
+        address: companySettings.address || "",
+        logo: companySettings.logo || "",
+        servicesOffered: companySettings.servicesOffered || [],
+        operatingHours: companySettings.operatingHours || ""
+      });
+    }
+  }, [companySettings]);
+  
+  // Mutations for updating data
+  const updateMaidMutation = useMutation({
+    mutationFn: async ({ id, isAvailable }: { id: number, isAvailable: boolean }) => {
+      const res = await apiRequest("PATCH", `/api/maids/${id}/availability`, { isAvailable });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/maids"] });
+      toast({
+        title: "Success",
+        description: `Maid status updated successfully`,
+      });
+      setIsApprovalDialogOpen(false);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update maid status",
+        variant: "destructive",
+      });
+    }
+  });
+  
+  const updateBookingMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: number, status: string }) => {
+      const res = await apiRequest("PATCH", `/api/bookings/${id}/status`, { status });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/bookings"] });
+      toast({
+        title: "Success",
+        description: "Booking status updated successfully",
+      });
+      setIsBookingDialogOpen(false);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update booking status",
+        variant: "destructive",
+      });
+    }
+  });
+  
+  const updateSettingsMutation = useMutation({
+    mutationFn: async (settings: Partial<CompanySettings>) => {
+      const res = await apiRequest("POST", "/api/company-settings", settings);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/company-settings"] });
+      toast({
+        title: "Success",
+        description: "Company settings updated successfully",
+      });
+      setIsSettingsDialogOpen(false);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update company settings",
+        variant: "destructive",
+      });
+    }
+  });
+  
+  // Handle actions
+  const handleApproveMaid = (maid: Maid) => {
+    setSelectedMaid(maid);
+    setIsApprovalDialogOpen(true);
+  };
+  
+  const handleUpdateMaidStatus = () => {
+    if (selectedMaid) {
+      updateMaidMutation.mutate({ 
+        id: selectedMaid.id, 
+        isAvailable: !selectedMaid.isAvailable 
+      });
+    }
+  };
+  
+  const handleManageBooking = (booking: Booking) => {
+    setSelectedBooking(booking);
+    setIsBookingDialogOpen(true);
+  };
+  
+  const handleUpdateBookingStatus = (status: string) => {
+    if (selectedBooking) {
+      updateBookingMutation.mutate({ id: selectedBooking.id, status });
+    }
+  };
+  
+  const handleUpdateSettings = () => {
+    updateSettingsMutation.mutate(settingsFormData);
+  };
   
   if (!user) {
     return null;
@@ -308,9 +459,21 @@ export default function Dashboard() {
                         </span>
                       </div>
                       <div>
-                        <Button size="sm" variant="outline" className="mr-2">View</Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="mr-2"
+                          onClick={() => handleManageBooking(booking)}
+                        >
+                          Manage
+                        </Button>
                         {booking.status === 'pending' && (
-                          <Button size="sm">Approve</Button>
+                          <Button 
+                            size="sm"
+                            onClick={() => handleUpdateBookingStatus("confirmed")}
+                          >
+                            Approve
+                          </Button>
                         )}
                       </div>
                     </div>
@@ -360,8 +523,15 @@ export default function Dashboard() {
                         </span>
                       </div>
                       <div>
-                        <Button size="sm" variant="outline" className="mr-2">View</Button>
-                        <Button size="sm">Edit</Button>
+                        <Button 
+                          size="sm" 
+                          variant={maid.isAvailable ? "outline" : "default"}
+                          className="mr-2"
+                          onClick={() => handleApproveMaid(maid)}
+                        >
+                          {maid.isAvailable ? 'Suspend' : 'Approve'}
+                        </Button>
+                        <Button size="sm" variant="outline">View</Button>
                       </div>
                     </div>
                   ))}
@@ -382,15 +552,257 @@ export default function Dashboard() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-500 mb-4">
-                Platform settings will be implemented soon. Here, you'll be able to configure pricing,
-                service areas, commission rates, and other platform settings.
-              </p>
-              <Button disabled>Save Settings</Button>
+              {settingsLoading ? (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="companyName">Company Name</Label>
+                        <Input 
+                          id="companyName" 
+                          value={settingsFormData.companyName} 
+                          onChange={e => setSettingsFormData({...settingsFormData, companyName: e.target.value})}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="contactEmail">Contact Email</Label>
+                        <Input 
+                          id="contactEmail" 
+                          type="email"
+                          value={settingsFormData.contactEmail} 
+                          onChange={e => setSettingsFormData({...settingsFormData, contactEmail: e.target.value})}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="contactPhone">Contact Phone</Label>
+                        <Input 
+                          id="contactPhone" 
+                          value={settingsFormData.contactPhone} 
+                          onChange={e => setSettingsFormData({...settingsFormData, contactPhone: e.target.value})}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="address">Company Address</Label>
+                        <Input 
+                          id="address" 
+                          value={settingsFormData.address} 
+                          onChange={e => setSettingsFormData({...settingsFormData, address: e.target.value})}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="operatingHours">Operating Hours</Label>
+                        <Input 
+                          id="operatingHours" 
+                          value={settingsFormData.operatingHours} 
+                          onChange={e => setSettingsFormData({...settingsFormData, operatingHours: e.target.value})}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    onClick={() => setIsSettingsDialogOpen(true)}
+                    disabled={updateSettingsMutation.isPending}
+                  >
+                    {updateSettingsMutation.isPending ? "Saving..." : "Save Settings"}
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
+      
+      {/* Approval Dialog */}
+      <Dialog open={isApprovalDialogOpen} onOpenChange={setIsApprovalDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {selectedMaid?.isAvailable ? "Suspend Maid" : "Approve Maid"}
+            </DialogTitle>
+            <DialogDescription>
+              {selectedMaid?.isAvailable 
+                ? "Are you sure you want to suspend this maid from the platform?" 
+                : "Approve this maid to allow them to receive bookings."
+              }
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedMaid && (
+            <div className="py-4">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium mr-3">
+                  {selectedMaid.name.charAt(0)}
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">{selectedMaid.name}</h3>
+                  <p className="text-sm text-gray-500">{selectedMaid.city}, {selectedMaid.locality}</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="font-medium">Email:</span> {selectedMaid.email}
+                </div>
+                <div>
+                  <span className="font-medium">Phone:</span> {selectedMaid.phone}
+                </div>
+                <div>
+                  <span className="font-medium">Experience:</span> {selectedMaid.experience || "Not specified"}
+                </div>
+                <div>
+                  <span className="font-medium">Services:</span> {selectedMaid.services?.join(", ") || "Not specified"}
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsApprovalDialogOpen(false)}>Cancel</Button>
+            <Button 
+              variant={selectedMaid?.isAvailable ? "destructive" : "default"}
+              onClick={handleUpdateMaidStatus}
+              disabled={updateMaidMutation.isPending}
+            >
+              {updateMaidMutation.isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : selectedMaid?.isAvailable ? (
+                <X className="mr-2 h-4 w-4" />
+              ) : (
+                <Check className="mr-2 h-4 w-4" />
+              )}
+              {selectedMaid?.isAvailable ? "Suspend" : "Approve"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Booking Management Dialog */}
+      <Dialog open={isBookingDialogOpen} onOpenChange={setIsBookingDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Manage Booking</DialogTitle>
+            <DialogDescription>
+              Update the status of this booking
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedBooking && (
+            <div className="py-4">
+              <div className="mb-4">
+                <h3 className="font-semibold text-lg">Booking #{selectedBooking.id}</h3>
+                <p className="text-sm text-gray-500">
+                  Booked for {new Date(selectedBooking.bookingDate).toLocaleDateString()}
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 text-sm mb-6">
+                <div>
+                  <span className="font-medium">Customer:</span> User #{selectedBooking.userId}
+                </div>
+                <div>
+                  <span className="font-medium">Maid:</span> #{selectedBooking.maidId}
+                </div>
+                <div>
+                  <span className="font-medium">Service Type:</span> {selectedBooking.serviceType || "Not specified"}
+                </div>
+                <div>
+                  <span className="font-medium">Status:</span> 
+                  <span className={`ml-2 px-2 py-1 rounded-full text-xs font-semibold 
+                    ${selectedBooking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                    selectedBooking.status === 'confirmed' ? 'bg-green-100 text-green-800' : 
+                    selectedBooking.status === 'cancelled' ? 'bg-red-100 text-red-800' : 
+                    'bg-blue-100 text-blue-800'}`}
+                  >
+                    {selectedBooking.status.charAt(0).toUpperCase() + selectedBooking.status.slice(1)}
+                  </span>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="font-medium mb-2">Update Status:</div>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    size="sm"
+                    variant={selectedBooking.status === "pending" ? "default" : "outline"}
+                    onClick={() => handleUpdateBookingStatus("pending")}
+                    disabled={selectedBooking.status === "pending" || updateBookingMutation.isPending}
+                  >
+                    Pending
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={selectedBooking.status === "confirmed" ? "default" : "outline"}
+                    onClick={() => handleUpdateBookingStatus("confirmed")}
+                    disabled={selectedBooking.status === "confirmed" || updateBookingMutation.isPending}
+                  >
+                    Confirm
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={selectedBooking.status === "completed" ? "default" : "outline"}
+                    onClick={() => handleUpdateBookingStatus("completed")}
+                    disabled={selectedBooking.status === "completed" || updateBookingMutation.isPending}
+                  >
+                    Complete
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={selectedBooking.status === "cancelled" ? "destructive" : "outline"}
+                    onClick={() => handleUpdateBookingStatus("cancelled")}
+                    disabled={selectedBooking.status === "cancelled" || updateBookingMutation.isPending}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsBookingDialogOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Settings Confirmation Dialog */}
+      <Dialog open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Save Platform Settings</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to update the platform settings?
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <AlertCircle className="h-16 w-16 text-primary mx-auto mb-4" />
+            <p className="text-center">
+              These settings will be applied platform-wide and affect all users and service providers.
+            </p>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsSettingsDialogOpen(false)}>Cancel</Button>
+            <Button 
+              onClick={handleUpdateSettings}
+              disabled={updateSettingsMutation.isPending}
+            >
+              {updateSettingsMutation.isPending ? "Saving..." : "Save Changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
