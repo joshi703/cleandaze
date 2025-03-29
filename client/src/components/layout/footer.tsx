@@ -7,7 +7,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-2">
             <div className="flex items-center gap-2">
-              <img src="/images/cleandaze-logo.png" alt="CLEANDAZE Logo" className="h-8 w-auto" />
+              <img src="/cleandaze-logo.png" alt="CLEANDAZE Logo" className="h-8 w-auto" />
               <span className="text-2xl font-bold bg-gradient-to-r from-yellow-100 to-yellow-300 text-transparent bg-clip-text">CLEANDAZE</span>
             </div>
             <p className="mt-4 text-gray-400 max-w-md">
