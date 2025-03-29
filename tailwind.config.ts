@@ -11,6 +11,13 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
+        // Custom theme colors
+        cream: {
+          light: "#fdf3dd",
+          DEFAULT: "#fbe8bc",
+          dark: "#fadd9b",
+        },
+        // Default shadcn colors
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

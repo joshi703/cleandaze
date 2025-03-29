@@ -165,8 +165,8 @@ export class MemStorage implements IStorage {
           maidId: 1, // Priya Sharma
           serviceType: "Cleaning",
           bookingDate: "2025-03-25T10:00:00.000Z",
-          duration: 3,
-          amount: 600,
+          bookingTime: "10:00 AM",
+          address: "42 Park Avenue, Mumbai Central",
           notes: "Weekly cleaning",
           status: "completed",
           createdAt: "2025-03-20T08:30:00.000Z"
@@ -176,8 +176,8 @@ export class MemStorage implements IStorage {
           maidId: 3, // Lakshmi Reddy
           serviceType: "Cooking",
           bookingDate: "2025-03-30T15:00:00.000Z",
-          duration: 2,
-          amount: 500,
+          bookingTime: "3:00 PM",
+          address: "42 Park Avenue, Mumbai Central",
           notes: "Special occasion cooking",
           status: "confirmed",
           createdAt: "2025-03-25T14:15:00.000Z"
@@ -187,8 +187,8 @@ export class MemStorage implements IStorage {
           maidId: 2, // Anjali Patel
           serviceType: "Laundry",
           bookingDate: "2025-03-28T09:00:00.000Z",
-          duration: 2,
-          amount: 300,
+          bookingTime: "9:00 AM",
+          address: "153 Blue Heights, Powai",
           notes: "Wash and iron clothes",
           status: "pending",
           createdAt: "2025-03-26T17:45:00.000Z"
@@ -198,8 +198,8 @@ export class MemStorage implements IStorage {
           maidId: 4, // Meena Kumari
           serviceType: "Child Care",
           bookingDate: "2025-04-01T08:00:00.000Z",
-          duration: 6,
-          amount: 1200,
+          bookingTime: "8:00 AM",
+          address: "153 Blue Heights, Powai",
           notes: "Take care of 5-year-old",
           status: "pending",
           createdAt: "2025-03-27T09:20:00.000Z"
@@ -209,8 +209,8 @@ export class MemStorage implements IStorage {
           maidId: 6, // Rekha Mishra
           serviceType: "Elder Care",
           bookingDate: "2025-03-29T14:00:00.000Z",
-          duration: 4,
-          amount: 800,
+          bookingTime: "2:00 PM",
+          address: "42 Park Avenue, Mumbai Central",
           notes: "Care for elderly parent",
           status: "cancelled",
           createdAt: "2025-03-22T11:10:00.000Z"

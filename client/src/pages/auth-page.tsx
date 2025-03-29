@@ -100,26 +100,26 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-sky-100 to-indigo-50 dark:from-gray-900 dark:to-slate-900">
+    <div className="flex min-h-screen hero-section">
       <div className="flex flex-col-reverse md:flex-row w-full max-w-screen-xl mx-auto p-4 md:p-8">
         {/* Auth Forms */}
         <div className="w-full md:w-1/2 flex items-center justify-center mb-8 md:mb-0">
-          <Card className="w-full max-w-md">
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold text-center">
+          <Card className="w-full max-w-md border-cream">
+            <CardHeader className="bg-cream-light rounded-t-lg">
+              <CardTitle className="text-2xl font-bold text-center text-black">
                 {activeTab === "login" ? "Login to MaidEasy" : "Create an Account"}
               </CardTitle>
-              <CardDescription className="text-center">
+              <CardDescription className="text-center text-black">
                 {activeTab === "login" 
                   ? "Enter your credentials to access your account" 
                   : "Sign up to start booking maid services"}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-6">
-                  <TabsTrigger value="login">Login</TabsTrigger>
-                  <TabsTrigger value="register">Register</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 mb-6 bg-cream">
+                  <TabsTrigger value="login" className="data-[state=active]:bg-cream-dark data-[state=active]:text-black">Login</TabsTrigger>
+                  <TabsTrigger value="register" className="data-[state=active]:bg-cream-dark data-[state=active]:text-black">Register</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="login">
@@ -132,7 +132,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel>Username</FormLabel>
                             <FormControl>
-                              <Input placeholder="Enter your username" {...field} />
+                              <Input placeholder="Enter your username" {...field} className="border-cream" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -146,7 +146,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel>Password</FormLabel>
                             <FormControl>
-                              <Input type="password" placeholder="Enter your password" {...field} />
+                              <Input type="password" placeholder="Enter your password" {...field} className="border-cream" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -155,7 +155,7 @@ export default function AuthPage() {
                       
                       <Button 
                         type="submit" 
-                        className="w-full" 
+                        className="w-full bg-cream hover:bg-cream-dark text-black" 
                         disabled={loginMutation.isPending}
                       >
                         {loginMutation.isPending ? "Logging in..." : "Login"}
@@ -174,7 +174,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel>Full Name</FormLabel>
                             <FormControl>
-                              <Input placeholder="John Doe" {...field} />
+                              <Input placeholder="John Doe" {...field} className="border-cream" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -188,7 +188,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel>Email</FormLabel>
                             <FormControl>
-                              <Input placeholder="john@example.com" {...field} />
+                              <Input placeholder="john@example.com" {...field} className="border-cream" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -202,7 +202,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel>Username</FormLabel>
                             <FormControl>
-                              <Input placeholder="johndoe" {...field} />
+                              <Input placeholder="johndoe" {...field} className="border-cream" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -216,7 +216,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel>Password</FormLabel>
                             <FormControl>
-                              <Input type="password" placeholder="Create a password" {...field} />
+                              <Input type="password" placeholder="Create a password" {...field} className="border-cream" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -230,7 +230,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel>Confirm Password</FormLabel>
                             <FormControl>
-                              <Input type="password" placeholder="Confirm your password" {...field} />
+                              <Input type="password" placeholder="Confirm your password" {...field} className="border-cream" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -239,7 +239,7 @@ export default function AuthPage() {
                       
                       <Button 
                         type="submit" 
-                        className="w-full" 
+                        className="w-full bg-cream hover:bg-cream-dark text-black" 
                         disabled={registerMutation.isPending}
                       >
                         {registerMutation.isPending ? "Creating account..." : "Create account"}
@@ -250,13 +250,13 @@ export default function AuthPage() {
               </Tabs>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
-              <div className="text-sm text-center text-gray-600 dark:text-gray-400">
+              <div className="text-sm text-center text-black">
                 {activeTab === "login" 
                   ? "Don't have an account? " 
                   : "Already have an account? "}
                 <Button 
                   variant="link" 
-                  className="p-0" 
+                  className="p-0 text-black" 
                   onClick={() => setActiveTab(activeTab === "login" ? "register" : "login")}
                 >
                   {activeTab === "login" ? "Sign up" : "Login"}
@@ -269,28 +269,28 @@ export default function AuthPage() {
         {/* Hero Section */}
         <div className="w-full md:w-1/2 flex flex-col justify-center">
           <div className="max-w-lg mx-auto md:mx-0 text-center md:text-left">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Welcome to MaidEasy
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-black">
+              Welcome to <span className="underline decoration-cream-dark decoration-4">MaidEasy</span>
             </h1>
-            <p className="text-xl mb-6 text-gray-700 dark:text-gray-300">
+            <p className="text-xl mb-6 text-black">
               India's most affordable and accessible maid service platform. Connect with trusted maids in your area and book services with just a few clicks.
             </p>
             <div className="space-y-4">
               <div className="flex items-center">
-                <div className="mr-4 bg-blue-100 dark:bg-blue-900 p-2 rounded-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600 dark:text-blue-400">
+                <div className="mr-4 bg-cream p-2 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-black">
                     <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
                     <path d="m9 12 2 2 4-4"></path>
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">Verified Maids</h3>
-                  <p className="text-gray-600 dark:text-gray-400">All maids on our platform are verified and trusted</p>
+                  <h3 className="font-semibold text-lg text-black">Verified Maids</h3>
+                  <p className="text-black/75">All maids on our platform are verified and trusted</p>
                 </div>
               </div>
               <div className="flex items-center">
-                <div className="mr-4 bg-blue-100 dark:bg-blue-900 p-2 rounded-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600 dark:text-blue-400">
+                <div className="mr-4 bg-cream p-2 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-black">
                     <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
                     <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
                     <line x1="9" y1="9" x2="9.01" y2="9"></line>
@@ -298,20 +298,20 @@ export default function AuthPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">Customer Satisfaction</h3>
-                  <p className="text-gray-600 dark:text-gray-400">Your satisfaction is our top priority</p>
+                  <h3 className="font-semibold text-lg text-black">Customer Satisfaction</h3>
+                  <p className="text-black/75">Your satisfaction is our top priority</p>
                 </div>
               </div>
               <div className="flex items-center">
-                <div className="mr-4 bg-blue-100 dark:bg-blue-900 p-2 rounded-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600 dark:text-blue-400">
+                <div className="mr-4 bg-cream p-2 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-black">
                     <circle cx="12" cy="12" r="10"></circle>
                     <polyline points="12 6 12 12 16 14"></polyline>
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">Fast & Reliable</h3>
-                  <p className="text-gray-600 dark:text-gray-400">Book a maid service in minutes, not days</p>
+                  <h3 className="font-semibold text-lg text-black">Fast & Reliable</h3>
+                  <p className="text-black/75">Book a maid service in minutes, not days</p>
                 </div>
               </div>
             </div>

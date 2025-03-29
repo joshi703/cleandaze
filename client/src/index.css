@@ -10,4 +10,24 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+  
+  /* Make the header use cream background */
+  header {
+    @apply bg-cream-light/90 backdrop-blur-sm border-cream;
+  }
+  
+  /* Use cream colors for buttons and UI elements */
+  .btn-cream {
+    @apply bg-cream hover:bg-cream-dark text-black transition-colors;
+  }
+  
+  /* Use cream for accents */
+  .accent-cream {
+    @apply text-cream-dark;
+  }
+
+  /* Hero section with cream background */
+  .hero-section {
+    @apply bg-gradient-to-b from-cream-light to-cream;
+  }
 }
