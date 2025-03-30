@@ -35,6 +35,48 @@ To deploy to production on Replit:
 2. Click "Deploy to production"
 3. Your application will be available at `yourapp.replit.app`
 
+### Vercel Deployment
+
+Follow these steps to deploy the application to Vercel:
+
+1. **Create a Vercel Account**
+   - Sign up at [vercel.com](https://vercel.com)
+
+2. **Prepare Your Repository**
+   - Push this codebase to a Git repository (GitHub, GitLab, or Bitbucket)
+
+3. **Connect to Vercel**
+   - Log in to Vercel
+   - Click "Add New Project"
+   - Import your repository
+   - Select the branch to deploy (usually `main` or `master`)
+
+4. **Configure Build Settings**
+   - Build command: `./vercel-build.sh`
+   - Output directory: `dist`
+   - Install command: `npm install`
+
+5. **Set Environment Variables**
+   - In Vercel dashboard, go to Project Settings > Environment Variables
+   - Add the environment variables from `.env.example`
+   - Make sure to set `SESSION_SECRET` to a secure value
+   - Set `VITE_VERCEL_DEPLOYMENT` to `true`
+
+6. **Deploy**
+   - Click "Deploy"
+   - Wait for the build and deployment to complete
+
+7. **Verify Deployment**
+   - Check that all routes are working
+   - Test authentication functionality
+   - Test the waitlist and booking features
+   
+8. **Troubleshooting Deployment Issues**
+   - **Function Errors**: Check the Function logs in the Vercel dashboard
+   - **Build Failures**: Review build logs for errors in the build process
+   - **Missing Environment Variables**: Ensure all required environment variables are set
+   - **API 404 Errors**: Verify your API routes in vercel.json are correctly configured
+
 ### Netlify Deployment
 
 Follow these steps to deploy the application to Netlify:
@@ -59,6 +101,7 @@ Follow these steps to deploy the application to Netlify:
    - In Netlify dashboard, go to Site settings > Build & deploy > Environment
    - Add the environment variables from `.env.example`
    - Make sure to set `SESSION_SECRET` to a secure value
+   - Leave `VITE_VERCEL_DEPLOYMENT` unset or set to `false`
 
 6. **Deploy**
    - Click "Deploy site"
@@ -88,8 +131,12 @@ Follow these steps to deploy the application to Netlify:
 - `client/` - Frontend React application
 - `server/` - Express backend
 - `shared/` - Shared types and schemas
-- `functions/` - Netlify serverless functions
+- `functions/` - Serverless functions for Netlify and Vercel
 - `public/` - Static assets
+- `netlify.toml` - Netlify configuration
+- `netlify-build.sh` - Build script for Netlify
+- `vercel.json` - Vercel configuration
+- `vercel-build.sh` - Build script for Vercel
 
 ## License
 

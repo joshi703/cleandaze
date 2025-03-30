@@ -69,15 +69,23 @@ try {
   }
 } catch (error) {
   log('Error configuring authentication: ' + error.message, 'error');
-  // Add a basic health endpoint if auth fails
+  // Add basic health endpoints if auth fails (both Netlify and Vercel paths)
   app.get('/.netlify/functions/api/auth-status', (req, res) => {
-    res.json({ status: 'Auth setup failed', error: error.message });
+    res.json({ status: 'Auth setup failed', platform: 'netlify', error: error.message });
+  });
+  
+  app.get('/api/auth-status', (req, res) => {
+    res.json({ status: 'Auth setup failed', platform: 'vercel', error: error.message });
   });
 }
 
-// Add a basic health check endpoint
+// Add basic health check endpoints for both Netlify and Vercel
 app.get('/.netlify/functions/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({ status: 'ok', platform: 'netlify', timestamp: new Date().toISOString() });
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', platform: 'vercel', timestamp: new Date().toISOString() });
 });
 
 // Configure static file serving for production assets
@@ -108,4 +116,8 @@ app.use((err, _req, res, _next) => {
 });
 
 // Export the serverless function
+// Netlify expects module.exports.handler
 module.exports.handler = serverless(app);
+// Vercel expects module.exports
+// The vercel-build.sh script will handle the transformation for Vercel deployment
+module.exports = serverless(app);
