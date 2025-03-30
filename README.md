@@ -1,6 +1,6 @@
-# CLEANDAZE - Maid Service Platform
+# Maid Service Booking Platform
 
-A modern, interactive platform for booking maid services, designed with a clean user interface and responsive design.
+A modern, interactive platform for booking maid services, designed with a clean user interface and responsive design. This application allows users to browse available maids, book services, join a waitlist, and includes an admin dashboard for service management.
 
 ## Features
 
@@ -20,7 +20,22 @@ A modern, interactive platform for booking maid services, designed with a clean 
 - Authentication: Passport.js
 - Animation: Framer Motion
 
-## Deployment to Netlify
+## Deployment Options
+
+### Replit Deployment
+
+This application is configured to run on Replit:
+
+1. Fork the Repl
+2. Click the Run button to start the development server
+3. The application will be available at the URL provided by Replit
+
+To deploy to production on Replit:
+1. Navigate to the "Deployments" tab in your Repl
+2. Click "Deploy to production"
+3. Your application will be available at `yourapp.replit.app`
+
+### Netlify Deployment
 
 Follow these steps to deploy the application to Netlify:
 
@@ -53,6 +68,13 @@ Follow these steps to deploy the application to Netlify:
    - Check that all routes are working
    - Test authentication functionality
    - Test the waitlist and booking features
+   
+8. **Troubleshooting Deployment Issues**
+   - **Function Invocation Failed**: Check the function logs for detailed error messages
+   - **Build Failures**: Review Netlify build logs for errors in the build process
+   - **Missing Environment Variables**: Ensure all required environment variables are set in the Netlify dashboard
+   - **API 404 Errors**: Verify your redirects in netlify.toml are correctly configured
+   - **Function Size Limit Exceeded**: If you encounter this, try optimizing dependencies and code splitting
 
 ## Local Development
 

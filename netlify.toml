@@ -1,9 +1,31 @@
 [build]
   command = "./netlify-build.sh"
   publish = "dist"
+  environment = { NODE_VERSION = "18", NPM_FLAGS = "--no-optional" }
+
+[build.processing]
+  skip_processing = false
+
+[build.processing.css]
+  bundle = true
+  minify = true
+
+[build.processing.js]
+  bundle = true
+  minify = true
+
+[build.processing.html]
+  pretty_urls = true
+
+[build.processing.images]
+  compress = true
 
 [functions]
   directory = "functions"
+  node_bundler = "esbuild"
+
+[dev]
+  framework = "vite"
 
 [[redirects]]
   from = "/api/*"
